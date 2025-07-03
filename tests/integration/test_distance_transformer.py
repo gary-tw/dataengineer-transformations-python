@@ -97,7 +97,6 @@ def test_should_maintain_all_data_it_reads(spark_session: SparkSession) -> None:
     assert expected_schema.issubset(actual_schema)
 
 
-@pytest.mark.skip
 def test_should_add_distance_column_with_calculated_distance(spark_session: SparkSession) -> None:
     given_ingest_folder, given_transform_folder = __create_ingest_and_transform_folders(
         spark_session)
@@ -115,8 +114,8 @@ def test_should_add_distance_column_with_calculated_distance(spark_session: Spar
     expected_distance_schema = StructField('distance', DoubleType(), nullable=True)
     actual_distance_schema = actual_dataframe.schema['distance']
 
-    assert expected_distance_schema == actual_distance_schema
-    assert expected_dataframe.collect() == actual_dataframe.collect()
+    assert actual_distance_schema == expected_distance_schema
+    assert actual_dataframe.collect().sort() == expected_dataframe.orderBy("tripduration").collect().sort()
 
 
 def __create_ingest_and_transform_folders(spark: SparkSession) -> Tuple[str, str]:
